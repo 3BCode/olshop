@@ -1,5 +1,5 @@
 class NetworkURL {
-  static String server = "http://isi dengan ip pc/olshop";
+  static String server = "http://192.168.241.125/olshop";
 
   static String login() {
     return "$server/API/login.php";
@@ -11,5 +11,38 @@ class NetworkURL {
 
   static String getProfil(String userid) {
     return "$server/API/profil.php?userid=$userid";
+  }
+
+  //Terbaru
+  static String getKategori() {
+    return "$server/API/kategori.php";
+  }
+
+  static String kategoriTambah() {
+    return "$server/API/kategoriTambah.php";
+  }
+
+  static String kategoriEdit() {
+    return "$server/API/kategoriEdit.php";
+  }
+
+  static String kategoriHapus() {
+    return "$server/API/kategoriHapus.php";
+  }
+
+  static String getProduk() {
+    return "$server/API/produk.php";
+  }
+
+  static String produkTambah() {
+    return "$server/API/produkTambah.php";
+  }
+
+  static String produkEdit() {
+    return "$server/API/produkEdit.php";
+  }
+
+  static String produkHapus() {
+    return "$server/API/produkHapus.php";
   }
 }

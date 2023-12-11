@@ -7,7 +7,7 @@ class KategoriModel {
     this.nama,
   });
 
-  factory KategoriModel.fromjson(Map<String, dynamic> json){
+  factory KategoriModel.fromJson(Map<String, dynamic> json){
     return KategoriModel(
       id:json['id'],
       nama:json['nama'],

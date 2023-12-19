@@ -3,8 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:olshop/model/kategori_user_model.dart';
+import 'package:olshop/model/keranjang_model.dart';
 import 'package:olshop/model/produk_model.dart';
 import 'package:olshop/network/network.dart';
+import 'package:olshop/screen/user/cari_produk.dart';
+import 'package:olshop/screen/user/home_detail.dart';
+import 'package:olshop/screen/user/keranjang.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -28,6 +32,7 @@ class _HomeState extends State<Home> {
     setState(() {
       userid = pref.getString("id");
     });
+    getTotalCart();
   }
 
   //koneksi filter berdasarkan kategori
@@ -81,6 +86,31 @@ class _HomeState extends State<Home> {
   }
   //tutup koneksi produk
 
+  var loadingNotif = false;
+  String total = "0";
+  final ex = <KeranjangModel>[];
+
+  getTotalCart() async {
+    setState(() {
+      loadingNotif = true;
+    });
+    ex.clear();
+    final response =
+        await http.get(Uri.parse(NetworkURL.totalKeranjang(userid!)));
+    final data = jsonDecode(response.body);
+    data.forEach((api) {
+      final exp = KeranjangModel(api['total']);
+      ex.add(exp);
+      setState(() {
+        total = exp.total;
+      });
+    });
+    setState(() {
+      loadingNotif = false;
+      getTotalCart();
+    });
+  }
+
   Future<void> onRefresh() async {
     getProduct();
     getProductwithCategory();
@@ -95,6 +125,7 @@ class _HomeState extends State<Home> {
     getProduct();
     getProductwithCategory();
     getPref();
+    getTotalCart();
   }
 
   @override
@@ -102,7 +133,14 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CariProduk(),
+              ),
+            );
+          },
           child: Container(
             height: 50,
             padding: const EdgeInsets.all(4),
@@ -135,10 +173,40 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.blue[800],
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
-            icon: const Stack(
-              children: <Widget>[
-                Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Keranjang(getTotalCart),
+                ),
+              );
+            },
+            icon: Stack(
+              children: [
+                const Icon(
+                  Icons.shopping_cart,
+                  color: Colors.white,
+                ),
+                total == "0"
+                    ? const SizedBox()
+                    : Positioned(
+                        right: 0,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.blue,
+                          ),
+                          child: Text(
+                            total,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
               ],
             ),
           ),
@@ -222,7 +290,15 @@ class _HomeState extends State<Home> {
                               itemBuilder: (context, i) {
                                 final a = listCategory[index].produk[i];
                                 return InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HomeDetail(a, onRefresh),
+                                      ),
+                                    );
+                                  },
                                   child: Container(
                                     decoration: BoxDecoration(
                                         border: Border.all(
@@ -288,7 +364,15 @@ class _HomeState extends State<Home> {
                           itemBuilder: (context, i) {
                             final a = list[i];
                             return InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        HomeDetail(a, onRefresh),
+                                  ),
+                                );
+                              },
                               child: Container(
                                 decoration: BoxDecoration(
                                     border: Border.all(

@@ -1,5 +1,9 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:olshop/model/keranjang_isi_model.dart';
@@ -99,6 +103,93 @@ class _KeranjangState extends State<Keranjang> {
       widget.method();
       _fetchData();
     });
+  }
+
+  kirimKeranjang() async {
+    final response = await http.post(
+        Uri.parse(
+          NetworkURL.pesanan(),
+        ),
+        body: {
+          "userid": userid,
+          "total": totalPrice,
+        });
+    final data = jsonDecode(response.body);
+    int value = data['value'];
+    String message = data['message'];
+    if (value == 1) {
+      setState(() {
+        widget.method();
+        _fetchData();
+      });
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Platform.isAndroid
+              ? AlertDialog(
+                  title: const Text("Information"),
+                  content: Text(message),
+                  actions: [
+                    // ignore: deprecated_member_use
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                      },
+                      child: const Text("Ok"),
+                    ),
+                  ],
+                )
+              : CupertinoAlertDialog(
+                  title: const Text("Information"),
+                  content: Text(message),
+                  actions: [
+                    // ignore: deprecated_member_use
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(() {
+                          Navigator.pop(context);
+                        });
+                      },
+                      child: const Text("Ok"),
+                    ),
+                  ],
+                );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Platform.isAndroid
+              ? AlertDialog(
+                  title: const Text("Warning"),
+                  content: Text(message),
+                  actions: [
+                    // ignore: deprecated_member_use
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Ok"),
+                    ),
+                  ],
+                )
+              : CupertinoAlertDialog(
+                  title: const Text("Warning"),
+                  content: Text(message),
+                  actions: [
+                    // ignore: deprecated_member_use
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Ok"),
+                    ),
+                  ],
+                );
+        },
+      );
+    }
   }
 
   @override
@@ -218,7 +309,9 @@ class _KeranjangState extends State<Keranjang> {
                                   width: 10,
                                 ),
                                 InkWell(
-                                  onTap: () {},
+                                  onTap: () {
+                                    kirimKeranjang();
+                                  },
                                   child: Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(

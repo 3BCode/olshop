@@ -1,5 +1,5 @@
 class NetworkURL {
-  static String server = "http://isiserver/olshop";
+  static String server = "http://isi dengan server/olshop";
 
   static String login() {
     return "$server/API/login.php";
@@ -68,5 +68,14 @@ class NetworkURL {
 
   static String updateQuantity() {
     return "$server/API/updateQuantity.php";
+  }
+
+  //Terbaru
+  static String pesanan() {
+    return "$server/API/pesanan.php";
+  }
+
+  static String invoice(String userid) {
+    return "$server/API/invoice.php?userid=$userid";
   }
 }
